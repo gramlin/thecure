@@ -3,6 +3,9 @@
 Nuxt 4-baserad pixelklient för arenashower med PixiJS-rendering, interaktiva moduler och orkestrering via WebSocket/MQTT.
 
 ## Snabbstart
+Nuxt 4 + PixiJS-baserad arena pixelklient med interaktiva moduler, timeline och PWA-stöd.
+
+## Utveckling
 
 ```bash
 npm install

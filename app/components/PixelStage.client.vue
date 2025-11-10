@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-// PixelStage monterar renderern på en canvas och visar fallback när WebGL saknas.
+
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRenderer } from '~/app/composables/useRenderer'
 import { storeToRefs } from 'pinia'

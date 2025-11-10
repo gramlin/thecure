@@ -7,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+
 // ConnectionIndicator visualiserar anslutningsstatus och enkel RTT-statistik.
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useWs } from '~/app/plugins/ws.client'
