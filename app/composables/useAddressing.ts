@@ -1,9 +1,17 @@
+/**
+ * Predicate som beskriver en stoladress i arenan.
+ */
 export interface SeatPredicate {
   section?: string
   row?: { gte?: number; lte?: number }
   id?: string
 }
 
+/**
+ * Address Expression (AE) beskriver vilka klienter som ska matcha ett kommando.
+ * DSL:en stödjer logiska noder (`any`/`all`/`not`) samt riktning mot säte, zon,
+ * party, ticket och capabilities.
+ */
 export type AddressExpression =
   | { any?: AddressExpression[] | AddressExpression }
   | { all?: AddressExpression[] | AddressExpression }
@@ -29,6 +37,9 @@ const normalize = (value?: AddressExpression[] | AddressExpression): AddressExpr
   return Array.isArray(value) ? value : [value]
 }
 
+/**
+ * Avgör om en stolpredikat matchar klientens kontext.
+ */
 const matchesSeat = (ctx: ClientContext, pred: SeatPredicate) => {
   if (pred.section && pred.section !== ctx.section) return false
   if (pred.id && pred.id !== ctx.seatId) return false
@@ -39,6 +50,10 @@ const matchesSeat = (ctx: ClientContext, pred: SeatPredicate) => {
   return true
 }
 
+/**
+ * Returnerar `true` om klientkontexten uppfyller angiven Address Expression.
+ * Matchningen sker rekursivt och stöder kombinationer av logiska noder.
+ */
 export const matchesAE = (ctx: ClientContext, ae?: AddressExpression): boolean => {
   if (!ae) return true
   if ('any' in ae) {
@@ -81,4 +96,7 @@ export const matchesAE = (ctx: ClientContext, ae?: AddressExpression): boolean =
   return false
 }
 
+/**
+ * Composable som exponerar adressmatchningshjälpare.
+ */
 export const useAddressing = () => ({ matchesAE })

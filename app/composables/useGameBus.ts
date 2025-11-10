@@ -4,6 +4,9 @@ type GameEvent = { type: string; payload?: any }
 
 type Listener = (event: GameEvent) => void
 
+/**
+ * Delad, reaktiv state för gamification.
+ */
 const state = reactive({
   score: 0,
   tickets: 0,
@@ -11,12 +14,21 @@ const state = reactive({
   listeners: new Set<Listener>()
 })
 
+/**
+ * Exponerar en enkel eventbuss för spelrelaterade händelser (score/tickets).
+ */
 export const useGameBus = () => {
+  /**
+   * Registrera en lyssnare som triggas på varje game event.
+   */
   const on = (handler: Listener) => {
     state.listeners.add(handler)
     return () => state.listeners.delete(handler)
   }
 
+  /**
+   * Sänd ett spel-event, uppdatera basstatistiken och notifiera lyssnare.
+   */
   const emit = (event: GameEvent) => {
     if (event.type === 'score') {
       state.score += event.payload ?? 0
@@ -28,6 +40,9 @@ export const useGameBus = () => {
     state.listeners.forEach((listener) => listener(event))
   }
 
+  /**
+   * Nollställ lokala poäng och historik – användbart inför ny session.
+   */
   const reset = () => {
     state.score = 0
     state.tickets = 0

@@ -6,6 +6,9 @@ import type { Timeline, Keyframe, Easing } from '~/types/timeline'
 import { useAppState } from '../stores/appState'
 import { useWs } from '../plugins/ws.client'
 
+/**
+ * Intern representation av en aktiv timeline instans.
+ */
 interface ActiveTimeline {
   timeline: Timeline
   start: number
@@ -13,6 +16,9 @@ interface ActiveTimeline {
   id: string
 }
 
+/**
+ * Easing-tabell inspirerad av populariserade tweeningfunktioner.
+ */
 const easingMap: Record<Easing | string, (t: number) => number> = {
   linear: (t) => t,
   inQuad: (t) => t * t,
@@ -86,6 +92,9 @@ const lerpColor = (a: string, b: string, t: number) => {
   return `#${((rr << 16) | (rg << 8) | rb).toString(16).padStart(6, '0')}`
 }
 
+/**
+ * Samplar ett track vid angiven tidpunkt och interpolerar tal samt färger.
+ */
 const sampleTrack = (track: Keyframe[], time: number) => {
   if (!track.length) return null
   if (time <= track[0].t) return track[0].v
@@ -115,6 +124,9 @@ const sampleTrack = (track: Keyframe[], time: number) => {
 const activeTimelines = reactive(new Map<string, ActiveTimeline>())
 let running = false
 
+/**
+ * RAF-loop som driver samtliga aktiva timelines och dispatchar uppdateringar.
+ */
 const step = () => {
   if (!running) return
   const renderer = useRenderer()
@@ -190,6 +202,9 @@ const step = () => {
   requestAnimationFrame(step)
 }
 
+/**
+ * Composable som orkestrerar timeline-spelning och makrotriggers.
+ */
 export const useSequencer = () => {
   const play = (timeline: Timeline) => {
     const clock = useClock()
@@ -207,6 +222,9 @@ export const useSequencer = () => {
     return id
   }
 
+  /**
+   * Stoppa en specifik timeline eller alla om inget id anges.
+   */
   const stop = (id?: string) => {
     if (id) {
       activeTimelines.delete(id)

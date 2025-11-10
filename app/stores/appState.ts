@@ -1,11 +1,17 @@
 import { defineStore } from 'pinia'
 
+/**
+ * Information om aktivt prisregn som visas i UI:t.
+ */
 interface PrizeState {
   active: boolean
   prizes: string[]
   expiresAt: number
 }
 
+/**
+ * Pinia-store som håller global UI-state för klienten.
+ */
 export const useAppState = defineStore('app', {
   state: () => ({
     backgroundColor: '#000000',

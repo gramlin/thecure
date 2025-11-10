@@ -7,6 +7,9 @@ type Transport = WebSocket | MqttClient | null
 
 type Status = 'connecting' | 'connected' | 'disconnected' | 'mock'
 
+/**
+ * Hanterar WebSocket- eller MQTT-anslutningen mot orkestreringslagret och distribuerar events.
+ */
 class OrchestrationClient {
   private url: string
   private ws: Transport = null
@@ -31,6 +34,9 @@ class OrchestrationClient {
     }
   }
 
+  /**
+   * Etablerar anslutning mot WebSocket eller MQTT beroende på URL-schema.
+   */
   private connect() {
     this.updateStatus('connecting')
     if (this.url.startsWith('mqtt')) {
@@ -55,18 +61,27 @@ class OrchestrationClient {
     this.dispatch('status', { status })
   }
 
+  /**
+   * Körs när transporten har öppnats och vi kan börja skicka hjärtslag.
+   */
   private handleOpen() {
     this.clearReconnect()
     this.startHeartbeat()
     this.updateStatus('connected')
   }
 
+  /**
+   * Påbörjar återanslutning och stoppar hjärtslag efter stängd anslutning.
+   */
   private handleClose() {
     this.stopHeartbeat()
     this.updateStatus('disconnected')
     this.scheduleReconnect()
   }
 
+  /**
+   * Avkodar inkommande JSON och dispatchar till lyssnare.
+   */
   private handleMessage(data: string) {
     try {
       const event = JSON.parse(data)
@@ -76,6 +91,9 @@ class OrchestrationClient {
     }
   }
 
+  /**
+   * Skickar ping-varje 10:e sekund för att hålla anslutningen vid liv.
+   */
   private startHeartbeat() {
     this.stopHeartbeat()
     this.heartbeatTimer = window.setInterval(() => {
@@ -90,6 +108,9 @@ class OrchestrationClient {
     }
   }
 
+  /**
+   * Schemalägger ett nytt anslutningsförsök.
+   */
   private scheduleReconnect() {
     if (!this.url || this.status === 'mock') return
     if (this.reconnectTimer) return
@@ -106,6 +127,9 @@ class OrchestrationClient {
     }
   }
 
+  /**
+   * Prenumerera på en viss eventtyp. Returnerar en unsubscribe-funktion.
+   */
   on(type: string, handler: Handler) {
     if (!this.handlers.has(type)) {
       this.handlers.set(type, new Set())
@@ -114,6 +138,9 @@ class OrchestrationClient {
     return () => this.handlers.get(type)!.delete(handler)
   }
 
+  /**
+   * Skicka ett event till orkestreringen.
+   */
   send(event: any) {
     if (!this.ws) return
     const payload = JSON.stringify(event)
@@ -138,20 +165,32 @@ class OrchestrationClient {
     handlers?.forEach((handler) => handler(event))
   }
 
+  /**
+   * Uppdaterar RTT och offset baserat på TimeSync-eventet.
+   */
   private onTimeSync(event: TimeSyncEvent) {
     const now = performance.now()
     this.rtt = now - event.clientSend
     this.timeOffset = event.serverTime - (now - this.rtt / 2)
   }
 
+  /**
+   * Sparar starttid för showen för att kunna ge relativ showtid.
+   */
   private onShowSync(event: ShowSyncEvent) {
     this.showStart = event.t0
   }
 
+  /**
+   * Returnerar den nuvarande showtiden (ms) baserat på offset och start.
+   */
   showTime() {
     return performance.now() + this.timeOffset - this.showStart
   }
 
+  /**
+   * Statistik för telemetri (ms offset/rtt).
+   */
   getStats() {
     return {
       offset: this.timeOffset,
@@ -159,6 +198,9 @@ class OrchestrationClient {
     }
   }
 
+  /**
+   * Stänger anslutningen och städar lyssnare.
+   */
   dispose() {
     this.stopHeartbeat()
     if (this.ws instanceof WebSocket) {
@@ -172,6 +214,9 @@ class OrchestrationClient {
 
 const clients = new Map<string, OrchestrationClient>()
 
+/**
+ * Delad instans av orkestreringsklienten baserat på aktuell `WS_URL`.
+ */
 export const useWs = () => {
   const config = useRuntimeConfig()
   const key = config.public.wsUrl || 'mock'

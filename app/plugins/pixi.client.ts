@@ -12,6 +12,9 @@ declare module 'vue' {
   }
 }
 
+/**
+ * Registrerar PixiJS i Nuxt och säkerställer att BatchRenderer är aktiverad.
+ */
 export default defineNuxtPlugin(() => {
   if (!extensions.has(ExtensionType.WebGLRendererPlugin, BatchRenderer)) {
     extensions.add({

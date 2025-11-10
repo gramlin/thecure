@@ -1,5 +1,8 @@
 import { useWs } from './ws.client'
 
+/**
+ * Registrerar service workern och skickar återkommande telemetri via Beacon API.
+ */
 export default defineNuxtPlugin(() => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(console.error)

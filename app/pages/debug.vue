@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+// Debug-sidan ger verktyg för att testa timeline, makron och interaktiva moduler lokalt.
 import { reactive, ref } from 'vue'
 import PixelStage from '~/app/components/PixelStage.client.vue'
 import QuizClient from '~/app/components/ui/QuizClient.vue'

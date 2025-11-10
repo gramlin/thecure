@@ -4,6 +4,9 @@ import { useRenderer } from './useRenderer'
 import { useClock } from './useClock'
 import { useAssets } from './useAssets'
 
+/**
+ * Hjälpfunktion som kör en animation loop via `requestAnimationFrame` och interpolerar 0→1.
+ */
 const runAnimation = (duration: number, step: (t: number) => void, complete?: () => void) => {
   const start = performance.now()
   const loop = (now: number) => {
@@ -18,6 +21,9 @@ const runAnimation = (duration: number, step: (t: number) => void, complete?: ()
   requestAnimationFrame(loop)
 }
 
+/**
+ * Skapar samlingen av fördefinierade makron. Varje makro får både runtime-ctx och specifika argument.
+ */
 const createMacros = (ctxFactory: () => MacroCtx): Record<string, Macro> => {
   const ctx = ctxFactory()
   return {
@@ -93,6 +99,10 @@ const createMacros = (ctxFactory: () => MacroCtx): Record<string, Macro> => {
 
 let cache: { macros: Record<string, Macro>; baseCtx: MacroCtx } | null = null
 
+/**
+ * Composable som kapslar makrosamlingen och erbjuder `run(name, args)`.
+ * Kontexten återanvänds men kan överskridas per körning.
+ */
 export const useMacros = () => {
   if (!cache) {
     const renderer = useRenderer()
@@ -109,6 +119,9 @@ export const useMacros = () => {
     cache = { macros: createMacros(() => baseCtx), baseCtx }
   }
 
+  /**
+   * Kör ett namngivet makro med valfria argument och kontextoverride.
+   */
   const run = (name: string, args: Record<string, any> = {}, overrides: Partial<MacroCtx> = {}) => {
     const macro = cache!.macros[name]
     if (!macro) return

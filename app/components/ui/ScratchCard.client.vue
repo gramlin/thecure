@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+// ScratchCard renderar en skrapbar overlay och signalerar när tillräckligt mycket har avslöjats.
 import { onMounted, ref } from 'vue'
 
 const props = withDefaults(

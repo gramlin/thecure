@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+// BeatGame låter användaren trycka i takt med beat-grid och rapporterar score via GameBus.
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useClock } from '~/app/composables/useClock'
 import { useGameBus } from '~/app/composables/useGameBus'

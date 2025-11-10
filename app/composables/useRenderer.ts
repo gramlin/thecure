@@ -1,11 +1,17 @@
 import { Application, Container, Sprite, Text } from 'pixi.js'
 import { useAssets } from './useAssets'
 
+/**
+ * PixiJS-scenobjekt i WebGL-läget.
+ */
 interface SceneObject {
   node: Sprite | Text
   type: 'sprite' | 'text'
 }
 
+/**
+ * Representation av objekt när vi renderar via Canvas2D.
+ */
 interface FallbackObject {
   type: 'sprite' | 'text'
   image?: HTMLImageElement
@@ -13,6 +19,9 @@ interface FallbackObject {
   props: Record<string, any>
 }
 
+/**
+ * Globalt render-state som delas mellan alla komponenter.
+ */
 interface RendererState {
   app: Application | null
   stage: Container | null
@@ -23,6 +32,9 @@ interface RendererState {
   fallback: Map<string, FallbackObject>
 }
 
+/**
+ * Avgör om WebGL-stöd finns och Pixi kan använda sin standardrenderer.
+ */
 const detectWebGL = () => {
   const fn = (Application as unknown as { isWebGLSupported?: () => boolean }).isWebGLSupported
   return typeof fn === 'function' ? fn() : true
@@ -38,6 +50,9 @@ const state: RendererState = {
   fallback: new Map()
 }
 
+/**
+ * Initierar Pixi-applikationen eller Canvas2D-fallback beroende på stöd.
+ */
 const ensureApp = async (canvas?: HTMLCanvasElement) => {
   if (!state.app && !state.ctx) {
     state.webgl = detectWebGL()
@@ -66,6 +81,9 @@ const ensureApp = async (canvas?: HTMLCanvasElement) => {
   return state.app
 }
 
+/**
+ * Använder ett props-objekt på både sprites och text-noder.
+ */
 const applyCommonProps = (node: Sprite | Text, props: Record<string, any>) => {
   if ('x' in props) node.x = props.x
   if ('y' in props) node.y = props.y
@@ -91,6 +109,9 @@ const applyCommonProps = (node: Sprite | Text, props: Record<string, any>) => {
   }
 }
 
+/**
+ * Renderar hela scenen i Canvas2D-läget baserat på den lokala fallback-kartan.
+ */
 const renderFallback = () => {
   if (!state.ctx || !state.canvas) return
   const ctx = state.ctx
@@ -125,13 +146,22 @@ const renderFallback = () => {
   }
 }
 
+/**
+ * Composable som kapslar scenhantering för PixiJS/Canvas och exponerar ett förenklat API.
+ */
 export const useRenderer = () => {
   const assets = useAssets()
 
+  /**
+   * Montera renderern på ett givet canvas-element.
+   */
   const mount = async (canvas: HTMLCanvasElement) => {
     await ensureApp(canvas)
   }
 
+  /**
+   * Ladda scenmanifest (texturer + sprites) innan de används i timeline.
+   */
   const loadScene = async (manifest: Record<string, any>) => {
     if (!state.stage && !state.ctx) await ensureApp(state.canvas || undefined)
     if (manifest.textures) {
@@ -144,6 +174,9 @@ export const useRenderer = () => {
     }
   }
 
+  /**
+   * Säkerställ att en sprite finns i scenen i både WebGL- och fallback-läge.
+   */
   const ensureSprite = async (id: string, textureId: string) => {
     if (!state.stage && !state.ctx) await ensureApp(state.canvas || undefined)
     if (state.webgl) {
@@ -163,6 +196,9 @@ export const useRenderer = () => {
     }
   }
 
+  /**
+   * Skapa eller uppdatera en textnod med valfritt stilobjekt.
+   */
   const ensureText = async (id: string, content: string, style?: any) => {
     if (!state.stage && !state.ctx) await ensureApp(state.canvas || undefined)
     if (state.webgl) {
@@ -183,6 +219,9 @@ export const useRenderer = () => {
     }
   }
 
+  /**
+   * Uppdatera transformations- och stilprops för en sprite/text.
+   */
   const applySpriteProps = (id: string, props: Record<string, any>) => {
     if (state.webgl) {
       const obj = state.objects.get(id)
@@ -197,6 +236,9 @@ export const useRenderer = () => {
     }
   }
 
+  /**
+   * Ta bort ett objekt från scenen och rensa resurser.
+   */
   const destroySprite = (id: string) => {
     if (state.webgl) {
       const obj = state.objects.get(id)

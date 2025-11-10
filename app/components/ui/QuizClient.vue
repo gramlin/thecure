@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+// QuizClient presenterar multipla val och emitterar valda alternativ till föräldern.
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 const props = defineProps<{

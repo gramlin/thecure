@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+// Index-sidan hanterar join-flödet och binder orkestreringshändelser till UI-modulerna.
 import { computed, onMounted, reactive, ref } from 'vue'
 import PixelStage from '~/app/components/PixelStage.client.vue'
 import ConnectionIndicator from '~/app/components/ConnectionIndicator.vue'
