@@ -1,11 +1,33 @@
-# Codeless Platform — Starter Repo
+# Arena Pixel Client
 
-This is a scaffold for a codeless (low-code) platform similar to BMC Remedy AR System, built with:
-- Supabase (Postgres + Auth + RLS)
-- FastAPI + SQLAlchemy 2.0
-- Nuxt 4 + Nuxt UI
-- Proxmox deployment (guide in `ops/`)
+Nuxt 4 + PixiJS-baserad arena pixelklient med interaktiva moduler, timeline och PWA-stöd.
 
-## 🧭 Build Tracker
-The README includes a detailed checklist of backend, frontend, DB migrations, and ops tasks.  
-(See our conversation for the full tracker.)
+## Utveckling
+
+```bash
+npm install
+npm run dev
+```
+
+## Scripts
+
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
+- `npm run format`
+- `npm run test`
+
+## Miljövariabler
+
+Skapa `.env` med:
+
+```
+WS_URL=wss://example.com/show
+SHOW_ID=demo
+```
+
+## Test
+
+```bash
+npm run test
+```
