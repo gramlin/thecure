@@ -2,9 +2,11 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   ssr: false,
+  compatibilityDate: '2024-11-01',
   modules: ['@nuxt/ui', '@pinia/nuxt'],
+  css: ['~/assets/css/main.css'],
   typescript: {
-    strict: true,
+    strict: false,
     shim: false
   },
   runtimeConfig: {

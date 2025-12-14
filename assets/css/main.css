@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure basic styling works */
+.debug-test {
+  color: red !important;
+  background: yellow !important;
+}
